@@ -3,7 +3,7 @@
 [![Security Status](https://img.shields.io/badge/Security-Strict_Compliance-green.svg)](https://github.com/rowanssv4)
 [![Automated Workflow](https://github.com/rowanssv4/nspfic/actions/workflows/auto-update.yml/badge.svg)](https://github.com/rowanssv4/nspfic/actions)
 
-[📄 English Description](#english-version) | [📄 中文版本](#中文版本)
+[<img src="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.4.6/flags/4x3/us.svg" width="20"/> English Description](#english-version) | [<img src="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.4.6/flags/4x3/tw.svg" width="20"/> 中文版本](#中文版本)
 
 ---
 
