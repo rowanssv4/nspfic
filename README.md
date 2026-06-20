@@ -1,7 +1,9 @@
-# Network Space Proxy Fingerprint Intelligence Collector (NSPFIC)
+# NSPFIC — Network Space Proxy Fingerprint Intelligence Collector
 
-[![Security Status](https://img.shields.io/badge/Security-Strict_Compliance-green.svg)](https://github.com/rowanssv4)
 [![Automated Workflow](https://github.com/rowanssv4/nspfic/actions/workflows/auto-update.yml/badge.svg)](https://github.com/rowanssv4/nspfic/actions)
+[![Security Compliance](https://img.shields.io/badge/Security-Strict_Compliance-green.svg)](https://github.com/rowanssv4)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 [<img src="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.4.6/flags/4x3/us.svg" width="20"/> English Description](#english-version) | [<img src="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.4.6/flags/4x3/tw.svg" width="20"/> 中文版本](#中文版本)
 
@@ -9,50 +11,152 @@
 
 ## English Version
 
-### 🚨 Crucial Statement: Strict Resource Constraint & Abuse Prevention
-* **TOS Compliance**: This repository operates under strict compliance with the GitHub Terms of Service (TOS). 
-* **Resource Optimization**: The automated data engineering pipeline executes seamlessly in **less than 25 seconds** per lifecycle run. It implements a core circuit-breaker mechanism to restrict third-party API penetration to **under 120 requests**, ensuring absolute zero strain on GitHub Actions compute infrastructure or external network carrier bandwidth.
-* **Legal Disclaimer & Local Law Compliance**: This project is exclusively developed as an open-source technical artifact for academic research, communication protocol analysis, and automated DevOps architecture training. **Users must strictly comply with all applicable local laws and regulations in their respective jurisdictions. The developer assumes absolutely no direct, joint, or collateral liability for any network penetration activities, data misuse, legal violations, or potential systemic risks resulting from users interacting with the generated datasets (`nodes.txt` / `sub.txt`). Use entirely at your own risk.**
+### What is NSPFIC?
 
----
+NSPFIC is a fully automated pipeline that collects public proxy fingerprints scattered across open-source intelligence feeds, cleanses the data, performs ASN (Autonomous System Number) lookups, and outputs structured, labeled datasets (`nodes.txt` / `sub.txt`) — updated on a schedule via GitHub Actions.
 
-### 1. What It Does
-NSPFIC is an automated intelligence telemetry pipeline designed to harvest scattered, non-structured public proxy fingerprints from open-source threat intelligence pools. It dynamically de-obfuscates transport layer profiles, strips away structural configuration anomalies, performs authoritative autonomous system number (ASN) reverse-lookups, and persists normalized routing metrics into structured plaintext/ciphertext records.
+### Features
 
-### 2. The Purpose (Why This Tool)
-The modern public routing landscape is heavily fragmented, polluted with invalid routing dead-ends, and flooded with falsified asset tags. The core purpose of this intelligence collector is to translate chaotic open-source spatial metadata into highly organized, multi-attribute network telemetry vectors. These standardized records serve as highly predictable infrastructure components for distributed network fault-tolerance simulations and telemetry mapping.
+- ⚡ **Fast** — each run completes in under 25 seconds
+- 🔒 **Rate-limited** — capped at 120 API calls per run to prevent abuse
+- 🧠 **Dual-engine fingerprinting** — online API for top-priority nodes; regex matrix fallback for the rest
+- 🛡️ **AST-level sanitization** — strips malicious redirects and config exploits before persisting data
+- 🌍 **ASN enrichment** — tags each proxy with carrier type (`Residential`, `Datacenter`, backbone)
 
-### 3. Technical Decisions (Why We Do It This Way)
-* **The No-Ping Policy (Zero Active Probing)**: Traditional active connection testing (such as mass ICMP PING or heavy TCP handshake benchmarks) within automated virtualized environments heavily degrades network I/O queues. Dead-node timeouts inevitably lead to task stalling and trigger provider-level anti-DDoS firewalls. Moving active verification to client-side edge sorters ensures the scraping pipeline maintains an ultra-high throughput without processing lockups.
-* **Dual-Engine Hybrid Fingerprinting**: To strictly bypass third-party provider rate-limits (429 Too Many Requests), the architecture bifurcates its workload: the top 120 high-weight seed streams are passed through an online API penetration engine to extract absolute carrier metadata (`+Residential`, `+Datacenter`, or specific backbone carriers); the remaining bulk data seamlessly switches to an offline 4-character lexical regex mapping matrix. This balances precision and velocity perfectly.
-* **AST Structural Sanitization**: Payload validation filters are applied at the Abstract Syntax Tree (AST) layer prior to serialization, explicitly isolating and neutralizing embedded malicious HTML redirections or configuration exploits to guarantee a pure telemetry repository.
+### Quick Start
 
-### 4. Infrastructure Selection (Why GitHub)
-* **High-Availability Global Multi-Routing Edge**: GitHub Actions provides a pristine, containerized execution runtime equipped with enterprise-grade tier-1 network transit edges. This ensures maximum throughput and deterministic latency when fetching global, multi-region open-source telemetry feeds.
-* **Frictionless Version-Controlled Storage**: Leveraging Git's native tree states allows for elegant, decentralized persistence without deploying or paying for traditional transactional databases. State delta records and automated operational telemetry logs are smoothly committed via standard headless bot push workflows.
+```bash
+# 1. Clone the repo
+git clone https://github.com/rowanssv4/nspfic.git
+cd nspfic
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Run the scraper
+python scraper.py
+```
+
+Output files:
+- `nodes.txt` — plain-text proxy list with fingerprint labels
+- `sub.txt` — subscription-format output
+- `report.txt` — run summary and stats
+
+### How It Works
+
+```
+Open-source feeds
+      │
+      ▼
+  Fetching & Deduplication
+      │
+      ▼
+  Dual-engine ASN Lookup
+  ├── Top 120 nodes → Online API (precise carrier metadata)
+  └── Remaining nodes → Offline regex matrix (fast classification)
+      │
+      ▼
+  AST Sanitization (strip malicious payloads)
+      │
+      ▼
+  Structured Output (nodes.txt / sub.txt)
+```
+
+### Design Decisions
+
+**Why no active ping/connection testing?**
+Mass TCP handshakes or ICMP probes in a CI environment cause I/O queue stalls and risk triggering ISP anti-scan blacklists. All connection verification is offloaded to the client side.
+
+**Why GitHub Actions?**
+GitHub's tier-1 BGP network edges provide reliable, globally distributed fetch performance. Git's version control replaces the need for a dedicated database — state diffs are committed by a headless bot.
+
+**Why the 120-request cap?**
+Strictly to avoid hitting third-party API rate limits (HTTP 429) and to ensure this project never abuses GitHub's free compute quota.
+
+### ⚠️ Legal Disclaimer
+
+This project is an open-source technical artifact for **academic research, protocol analysis, and DevOps automation practice only**.
+
+Users are solely responsible for complying with all applicable laws and regulations in their jurisdiction. The developer assumes **no liability** for any misuse of the generated datasets, network penetration activities, or legal violations arising from use of this project. **Use at your own risk.**
+
+This repository operates in strict compliance with [GitHub's Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service).
 
 ---
 
 ## 中文版本
 
-### 🚨 核心聲明：使用者在地法律遵循與防濫用規範
-* **法律免責與風險自擔（核心）**：本项目屬純粹的開源技術研究產物，僅供學術研究、網路協定分析及自動化運維（DevOps）技術練習使用。**使用者在使用本專案或衍生資料時，必須嚴格遵守所在國家或地區的在地法律法規。任何因不當操作、違規使用或非法網路穿透行為所引發的法律訴訟、行政制裁或系統性風險，均由使用者本人承擔全部責任，專案開發者對此概不負責，亦不承擔任何直接、間接或連帶之法律責任。**
-* **服務合規**：本專案嚴格遵循 GitHub 服務條款（TOS）的合規性框架執行。
-* **高頻熔斷**：資料治理自動化流程的單次執行期嚴格控制在 **25 秒以內**。系統內建高頻請求熔斷器，將線上資料庫的深度查詢硬性限制在 **120 次以內**，杜絕任何濫用 GitHub Actions 免費運算資源與外部網路頻寬的行為。
+### 這是什麼？
+
+NSPFIC 是一個全自動的代理指紋情報收集流水線。它從公開的開源情報源中採集散落的代理節點，進行清洗、去重、ASN 歸屬反查，最終輸出帶有載體標籤的結構化資料集（`nodes.txt` / `sub.txt`），並透過 GitHub Actions 定時自動更新。
+
+### 功能特色
+
+- ⚡ **高速** — 單次全流程執行嚴格控制在 25 秒以內
+- 🔒 **防濫用熔斷** — 線上 API 查詢硬性上限 120 次/次，杜絕資源濫用
+- 🧠 **雙引擎混合指紋** — 高優先節點走線上 API 精查，後備節點走本地正則矩陣秒級分類
+- 🛡️ **AST 安全前置過濾** — 序列化前攔截並剔除惡意 HTML 導向與異常設定偽裝
+- 🌍 **ASN 情報富化** — 為每個代理標記載體類型（住宅 / 機房 / 主干網骨幹）
+
+### 快速開始
+
+```bash
+# 1. 克隆倉庫
+git clone https://github.com/rowanssv4/nspfic.git
+cd nspfic
+
+# 2. 安裝依賴
+pip install -r requirements.txt
+
+# 3. 執行採集
+python scraper.py
+```
+
+輸出文件說明：
+- `nodes.txt` — 帶指紋標籤的明文代理列表
+- `sub.txt` — 訂閱格式輸出
+- `report.txt` — 本次執行摘要與統計
+
+### 運作流程
+
+```
+開源情報源
+    │
+    ▼
+  採集 & 去重
+    │
+    ▼
+  雙引擎 ASN 反查
+  ├── 前 120 個核心節點 → 線上 API 精查（真實載體資訊）
+  └── 其餘節點 → 本地輕量 Regex 矩陣（秒級分類）
+    │
+    ▼
+  AST 安全過濾（攔截惡意載荷）
+    │
+    ▼
+  結構化輸出（nodes.txt / sub.txt）
+```
+
+### 設計決策
+
+**為什麼不做主動連通性測試（No-Ping 策略）？**
+在 CI/CD 虛擬環境中執行海量 TCP 握手或 ICMP 探測，極易因死節點逾時堆積造成 I/O 隊列卡死，甚至被電信商防禦系統誤判為異常掃描而封鎖 IP。因此本專案將連通性驗證完全交由用戶端在地非同步執行，核心流程僅負責採集與清洗。
+
+**為什麼選擇 GitHub Actions？**
+GitHub 的全球頂級 BGP 互聯網路邊緣，確保了拉取分布在不同國家開源資源時的傳輸效率。Git 版本拓撲特性替代了獨立資料庫的需求——執行狀態增量覆蓋透過 Headless Bot 的 force push 無縫完成，大幅降低維運成本。
+
+**為什麼限制 120 次 API 請求？**
+為了嚴格規避第三方 API 頻率限制（HTTP 429 Too Many Requests），同時確保本專案在任何情況下都不濫用 GitHub Actions 的免費運算資源配額。
+
+### ⚠️ 法律免責聲明
+
+本專案屬純粹的**開源技術研究產物**，僅供學術研究、網路協定分析及自動化運維（DevOps）技術練習使用。
+
+使用者在使用本專案或衍生資料時，**必須嚴格遵守所在國家或地區的在地法律法規**。任何因不當操作、違規使用或非法網路穿透行為所引發的法律訴訟、行政制裁或系統性風險，均由使用者本人承擔全部責任。專案開發者對此概不負責，亦不承擔任何直接、間接或連帶之法律責任。**風險自擔。**
+
+本專案嚴格遵循 [GitHub 服務條款（TOS）](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service) 執行。
 
 ---
 
-### 1. 它做什麼 (What It Does)
-本專案（NSPFIC）是一個全自動化的網路空間情報清洗流程。它能夠高頻並行採集網際網路中公開且無序散落的代理空間指紋載荷，進行深度的傳輸層特徵解包與結構化清洗，同時交叉比對全球權威 BGP 自主系統（ASN）歸屬，最終將帶有高價值路由標籤的資料寫入結構化的明文與密文資料集。
-
-### 2. 做的目的 (Why This Tool)
-公網中的分布式代理資產通常具備高度碎片化、瞬時失效且配置備註嚴重偽造的特徵。開發此收集器的核心目的，是為了將這些混雜的開源威脅情報與網路測繪原始資料，透過技術手段提煉並轉化為具備明確國別指紋、線路特質（如家寬/機房）的標準化遙測指標，作為分布式容災與網路拓撲模擬實驗的可靠數據基礎。
-
-### 3. 為什麼這麼做 (Why We Do It This Way)
-* **全面剝離主動驗證（No-Ping 策略）**：傳統的 TCP 三次握手並行測速或 ICMP PING 驗證，在自動化 CI/CD 虛擬環境下執行，極易因海量死節點的逾時（Timeout）堆積而造成 I/O 隊列嚴重卡死，甚至會被電信商防禦系統誤判為異常掃描而遭遇 IP 封鎖。因此本專案採用「全量釋出、移交用戶端在地非同步測速」的架構，確保核心流程能在數秒內維持極高吞吞吐量。
-* **雙引擎混合指紋清洗矩陣**：為徹底規避外部權威地理資料庫的並行請求頻率限制（429 Too Many Requests），系統採取分流設計：前 120 個核心種子路徑會啟動線上 API 穿透，反查真實的 `+住宅IP`、`+商業機房` 或主干網拓撲特質；而 120 之後的後備載荷則無縫切換至在地輕量級 4 字詞法正規表示式（Regex）矩陣進行秒級認領，既防止被封鎖 IP，又實現了高精確度的全量標記。
-* **抽象語法樹（AST）安全前置粗篩**：在將原始載荷序列化儲存之前，系統會執行特定的指紋粗篩，強行攔截並剔除所有包含惡意 HTML 網頁原始碼導向或異常偽裝的設定，確保下發資料池的絕對純淨度。
-
-### 4. 為什麼選擇 GitHub (Why GitHub)
-* **全球化多路由高可用邊緣運算**：GitHub Actions 提供了乾淨、具備全球頂級 BGP 互聯的跨國網路傳輸邊緣，能最大化保證並行拉取分布在不同國家和地區的開源網路資源時的傳輸效率與網路穩定性。
-* **天然的版本控制情報庫**：利用 Git 的版本拓撲演進特性，可以在無需配置獨立、高成本關聯式資料庫的前提下，透過 Headless 機器人的強制作動（Force Push），無縫實現全域資料的增量覆蓋與執行狀態日誌的持久化，極大降低了輕量級極客專案的維運成本。
+<div align="center">
+  <sub>Made with ❤️ for the open-source community · 僅供學術研究使用</sub>
+</div>
