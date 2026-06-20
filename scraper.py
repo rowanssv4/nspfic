@@ -25,12 +25,11 @@ class Logger(object):
 sys.stdout = Logger("report.txt")
 sys.stderr = sys.stdout
 
-# 1. 动态计算北京时间
-bj_now = datetime.datetime.utcnow() + datetime.timedelta(hours=8)
-time_str = bj_now.strftime('%Y-%m-%d %H:%M:%S')
+tp_now = datetime.datetime.utcnow() + datetime.timedelta(hours=8)
+time_str = tp_now.strftime('%Y-%m-%d %H:%M:%S')
 
 print("==================================================")
-print(f"📋 混合指纹反查级清洗管道启动: {time_str} (北京时间)")
+print(f"📋 混合指紋反查級清洗管道啟動: {time_str} (台北時間)")
 print("==================================================")
 
 def get_date_strings(days_ago=0):
@@ -56,40 +55,41 @@ SOURCES = [
 
 COUNTRY_KEYWORDS = {
     'HK': ['香港', 'HONGKONG', 'HONG KONG', '🇭🇰', 'HK'],
-    'TW': ['台湾', 'TAIWAN', '🇹🇼', 'TW'],
-    'JP': ['日本', 'JAPAN', '🇯🇵', 'JP'],
-    'US': ['美国', 'UNITED STATES', 'AMERICA', '🇺🇸', 'US', '美'],
+    'TW': ['台灣', '台灣', '台湾', 'TAIWAN', '🇹🇼', 'TW'],
+    'JP': ['日本', 'JAPAN', '🇯🇵', 'JP', '日'],
+    'US': ['美國', '美国', 'UNITED STATES', 'AMERICA', '🇺🇸', 'US', '美'],
     'SG': ['新加坡', 'SINGAPORE', '🇸🇬', 'SG', '新'],
-    'KR': ['韩国', 'KOREA', '🇰🇷', 'KR', '韩'],
-    'UK': ['英国', 'UNITED KINGDOM', 'BRITAIN', '🇬🇧', 'UK'],
-    'DE': ['德国', 'GERMANY', '🇩🇪', 'DE'],
-    'FR': ['法国', 'FRANCE', '🇫🇷', 'FR'],
-    'NL': ['荷兰', 'NETHERLANDS', '🇳🇱', 'NL'],
-    'RU': ['俄罗斯', 'RUSSIA', '🇷🇺', 'RU'],
-    'CA': ['加拿大', 'CANADA', '🇨🇦', 'CA'],
-    'AU': ['澳大利亚', '澳洲', 'AUSTRALIA', '🇦🇺', 'AU'],
+    'KR': ['韓國', '韩国', 'KOREA', '🇰🇷', 'KR', '韓', '韩'],
+    'UK': ['英國', '英国', 'UNITED KINGDOM', 'BRITAIN', '🇬🇧', 'UK', '英'],
+    'DE': ['德國', '德国', 'GERMANY', '🇩🇪', 'DE', '德'],
+    'FR': ['法國', '法国', 'FRANCE', '🇫🇷', 'FR', '法'],
+    'NL': ['荷蘭', '荷兰', 'NETHERLANDS', '🇳🇱', 'NL', '荷'],
+    'RU': ['俄羅斯', '俄罗斯', 'RUSSIA', '🇷🇺', 'RU', '俄'],
+    'CA': ['加拿大', 'CANADA', '🇨🇦', 'CA', '加'],
+    'AU': ['澳大利亞', '澳大利亚', '澳洲', 'AUSTRALIA', '🇦🇺', 'AU'],
     'IN': ['印度', 'INDIA', '🇮🇳', 'IN'],
     'TR': ['土耳其', 'TURKEY', '🇹🇷', 'TR'],
-    'VN': ['越南', 'VIETNAM', '🇻🇳', 'VN'],
-    'TH': ['泰国', 'THAILAND', '🇹🇭', 'TH'],
-    'PH': ['菲律宾', 'PHILIPPINES', '🇵🇭', 'PH'],
-    'MY': ['马来西亚', 'MALAYSIA', '🇲🇾', 'MY'],
+    'VN': ['越南', 'VIETNAM', '🇻🇳', 'VN', '越'],
+    'TH': ['泰國', '泰国', 'THAILAND', '🇹🇭', 'TH', '泰'],
+    'PH': ['菲律賓', '菲律宾', 'PHILIPPINES', '🇵🇭', 'PH', '菲'],
+    'MY': ['馬來西亞', '马来西亚', 'MALAYSIA', '🇲🇾', 'MY', '馬', '马'],
     'BR': ['巴西', 'BRAZIL', '🇧🇷', 'BR'],
     'ZA': ['南非', 'SOUTH AFRICA', '🇿🇦', 'ZA'],
-    'IT': ['意大利', 'ITALY', '🇮🇹', 'IT'],
-    'ES': ['西班牙', 'SPAIN', '🇪🇸', 'ES'],
-    'CH': ['瑞士', 'SWITZERLAND', '🇨🇭', 'CH'],
+    'IT': ['義大利', '意大利', 'ITALY', '🇮🇹', 'IT', '意'],
+    'ES': ['西班牙', 'SPAIN', '🇪🇸', 'ES', '西'],
+    'CH': ['瑞士', 'SWITZERLAND', '🇨🇭', 'CH', '瑞'],
     'SE': ['瑞典', 'SWEDEN', '🇸🇪', 'SE'],
-    'CN': ['中国', 'CHINA', '🇨🇳', 'CN', '回国']
+    'CN': ['中國', '中国', 'CHINA', '🇨🇳', 'CN', '回國', '回国']
 }
 
 def detect_country_local(upper_name):
     for code, keywords in COUNTRY_KEYWORDS.items():
         for kw in keywords:
-            if kw.isalpha() and len(kw) <= 2:
-                if re.search(r'\b' + kw + r'\b', upper_name) or f"-{kw}" in upper_name or f"{kw}-" in upper_name:
+            kw_upper = kw.upper()
+            if kw_upper.isalpha() and len(kw_upper) <= 2:
+                if re.search(r'\b' + kw_upper + r'\b', upper_name) or f"-{kw_upper}" in upper_name or f"{kw_upper}-" in upper_name:
                     return code
-            elif kw in upper_name:
+            elif kw_upper in upper_name:
                 return code
     clean_name = re.sub(r'[^\u4e00-\u9fa5a-zA-Z0-9]', '', upper_name)
     if clean_name:
@@ -110,9 +110,9 @@ def query_third_party_isp(host):
                 
                 isp_tag = ""
                 if any(k in org_clean for k in ["CLOUDFLARE", "DIGITALOCEAN", "LINODE", "AMAZON", "AWS", "OVH", "HETZNER"]):
-                    isp_tag = "+商业机房"
+                    isp_tag = "+商業機房"
                 elif any(k in org_clean for k in ["TELECOM", "MOBILE", "UNICOM", "CHINANET"]):
-                    isp_tag = "+直连原生"
+                    isp_tag = "+直連原生"
                 elif data.get("proxy") is True or "CHG" in org_clean:
                     isp_tag = "+住宅IP"
                 else:
@@ -164,21 +164,19 @@ def fetch_and_decode():
 if __name__ == "__main__":
     try:
         raw_list = fetch_and_decode()
-        print(f"[INFO] 原始去重去重终结。池容量: {len(raw_list)} 条。")
+        print(f"[INFO] 原始去重終結。池容量: {len(raw_list)} 條。")
         
         final_nodes = []
         counter = 1
         
-        # ==================== 🛠️ 核心修改：注入专属双置顶公告 ====================
-        notice_1 = "📢 本订阅节点均来自于公开节点源，仅供学习参考"
-        notice_2 = f"🔄 订阅最后更新时间：{time_str} (北京时间)"
+        notice_1 = "📢 本訂閱節點均來自於公開節點源，僅供學習參考"
+        notice_2 = f"🔄 訂閱最後更新時間：{time_str} (台北時間)"
         
         node_ann_1 = f"vless://unusable-uuid-1@127.0.0.1:8888?encryption=none&security=none#{urllib.parse.quote(notice_1)}"
         node_ann_2 = f"vless://unusable-uuid-2@127.0.0.1:8889?encryption=none&security=none#{urllib.parse.quote(notice_2)}"
         
-        final_nodes.append(node_ann_1)  # 第一条公告：免责声明
-        final_nodes.append(node_ann_2)  # 第二条公告：实时动态时间
-        # =====================================================================
+        final_nodes.append(node_ann_1)
+        final_nodes.append(node_ann_2)
         
         for idx, node in enumerate(raw_list, 1):
             host, ntype, orig_data, upper_ps = extract_host_from_node(node)
@@ -189,10 +187,10 @@ if __name__ == "__main__":
                 real_country, real_isp = query_third_party_isp(host)
                 country_prefix = real_country if real_country else detect_country_local(upper_ps)
                 isp_suffix = real_isp if real_isp else ""
-                new_ps = f"{country_prefix}{isp_suffix}-Rowanss节点分享-{counter:03d}"
+                new_ps = f"{country_prefix}{isp_suffix}-Rowanss節點分享-{counter:03d}"
             else:
                 country_prefix = detect_country_local(upper_ps)
-                new_ps = f"{country_prefix}-Rowanss节点分享-{counter:03d}"
+                new_ps = f"{country_prefix}-Rowanss節點分享-{counter:03d}"
             
             try:
                 if ntype == "vmess":
@@ -210,6 +208,6 @@ if __name__ == "__main__":
         joined_data = "\n".join(final_nodes)
         with open("nodes.txt", "w", encoding="utf-8") as f: f.write(joined_data)
         with open("sub.txt", "w", encoding="utf-8") as f: f.write(base64.b64encode(joined_data.encode('utf-8')).decode('utf-8'))
-        print(f"[🎉 SUCCESS] 双管道全自动清洗完成。最终总下发节点: {len(final_nodes)} 个。")
+        print(f"[🎉 SUCCESS] 雙管道全自動清洗完成。最終總下發節點: {len(final_nodes)} 個。")
     except Exception:
         sys.exit(0)
